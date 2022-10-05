@@ -11,6 +11,7 @@ struct Contact {
     string name, surname, phone, mail, address;
 };
 
+void showMainMenu(vector<Contact> &addressBook);
 int generateNewContactIdentifier(vector<Contact> &addressBook);
 string getMandatoryData(string fieldName);
 string getOptionalData(string fieldName);
@@ -37,10 +38,13 @@ void pause();
 
 int main() {
     vector<Contact> addressBook;
-    char selectedOption;
-
     readAddressBookFromFile(addressBook);
+    showMainMenu(addressBook);
+    return 0;
+}
 
+void showMainMenu(vector<Contact> &addressBook) {
+    char selectedOption;
     do {
         system("cls");
         cout << "###### KSIAZKA ADRESOWA ######" << endl;
@@ -86,10 +90,7 @@ int main() {
         }
         }
     } while (true);
-
-    return 0;
 }
-
 
 int generateNewContactIdentifier(vector<Contact> &addressBook) {
     int newIdentifier = 0;
@@ -214,6 +215,7 @@ void searchContactsByName(vector<Contact> &addressBook) {
         pause();
     }
 }
+
 void searchContactsBySurname(vector<Contact> &addressBook) {
     string surname;
     char answer;
@@ -273,6 +275,7 @@ void displayAllContats(vector<Contact> &addressBook) {
         cout << "Ksiazka adresowa jest pusta." << endl;
     }
 }
+
 void closeProgram() {
     char key;
     while(key != 'T' && key != 't' && key != 'N' && key != 'n') {
@@ -284,6 +287,7 @@ void closeProgram() {
         }
     }
 }
+
 void pause() {
     cin.sync();
     cout << "Wcisnij ENTER, aby powrocic do menu glownego.";
@@ -356,6 +360,7 @@ void editSurname(vector<Contact> &addressBook, int contactIndex) {
     addressBook[contactIndex].surname = newSurname;
     updateLineInFile(addressBook, addressBook[contactIndex].id);
 }
+
 void editPhone(vector<Contact> &addressBook, int contactIndex) {
     string newPhone;
     newPhone = getOptionalData("nowy numer telefonu (lub wcisnij ENTER aby usunac)");
@@ -369,6 +374,7 @@ void editMail(vector<Contact> &addressBook, int contactIndex) {
     addressBook[contactIndex].mail = newMail;
     updateLineInFile(addressBook, addressBook[contactIndex].id);
 }
+
 void editAddress(vector<Contact> &addressBook, int contactIndex) {
     string newAddress;
     newAddress = getOptionalData("nowy adres (lub wcisnij ENTER aby usunac)");
