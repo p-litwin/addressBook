@@ -11,39 +11,40 @@ struct Contact {
     string name, surname, phone, mail, address;
 };
 
-void showMainMenu(vector<Contact> &addressBook);
-int generateNewContactIdentifier(vector<Contact> &addressBook);
+vector<Contact> addressBook;
+
+void showMainMenu();
+int generateNewContactIdentifier();
 string getMandatoryData(string fieldName);
 string getOptionalData(string fieldName);
-int findContactIndex(vector<Contact> &addressBook, int id);
+int findContactIndex(int id);
 Contact splitStringByDelimiter(string textToSplit, string delimiter);
-void readAddressBookFromFile(vector<Contact> &addressBook);
-void addContactToAddressBook(vector<Contact> &addressBook);
-void searchContactsByName(vector<Contact> &addressBook);
-void searchContactsBySurname(vector<Contact> &addressBook);
+void readAddressBookFromFile();
+void addContactToAddressBook();
+void searchContactsByName();
+void searchContactsBySurname();
 void saveContactToFile(Contact newContact);
-void displayContactDetails(vector<Contact> &addressBook, int addressBookIndex);
-void displayAllContats(vector<Contact> &addressBook);
-void editContact(vector<Contact> &addressBook);
-void editName(vector<Contact> &addressBook, int id);
-void editSurname(vector<Contact> &addressBook, int id);
-void editPhone(vector<Contact> &addressBook, int id);
-void editMail(vector<Contact> &addressBook, int id);
-void editAddress(vector<Contact> &addressBook, int id);
-void updateLineInFile(vector<Contact> &addressBook, int id);
-void removeContact(vector<Contact> &addressBook);
-void removeLineFromFile(vector<Contact> &addressBook, int id);
+void displayContactDetails(int addressBookIndex);
+void displayAllContats();
+void editContact();
+void editName(int contactIndex);
+void editSurname(int contactIndex);
+void editPhone(int contactIndex);
+void editMail(int contactIndex);
+void editAddress(int contactIndex);
+void updateLineInFile(int id);
+void removeContact();
+void removeLineFromFile(int id);
 void closeProgram();
 void pause();
 
 int main() {
-    vector<Contact> addressBook;
-    readAddressBookFromFile(addressBook);
-    showMainMenu(addressBook);
+    readAddressBookFromFile();
+    showMainMenu();
     return 0;
 }
 
-void showMainMenu(vector<Contact> &addressBook) {
+void showMainMenu() {
     char selectedOption;
     do {
         system("cls");
@@ -60,29 +61,29 @@ void showMainMenu(vector<Contact> &addressBook) {
 
         switch(selectedOption) {
         case '1': {
-            addContactToAddressBook(addressBook);
+            addContactToAddressBook();
             break;
         }
         case '2': {
-            searchContactsByName(addressBook);
+            searchContactsByName();
             break;
         }
         case '3': {
-            searchContactsBySurname(addressBook);
+            searchContactsBySurname();
             break;
         }
         case '4': {
-            displayAllContats(addressBook);
+            displayAllContats();
             pause();
             break;
         }
         case '5': {
-            removeContact(addressBook);
+            removeContact();
             pause();
             break;
         }
         case '6': {
-            editContact(addressBook);
+            editContact();
             break;
         }
         case '0': {
@@ -92,7 +93,7 @@ void showMainMenu(vector<Contact> &addressBook) {
     } while (true);
 }
 
-int generateNewContactIdentifier(vector<Contact> &addressBook) {
+int generateNewContactIdentifier() {
     int newIdentifier = 0;
     if (addressBook.size() == 0) {
         newIdentifier = 1;
@@ -125,7 +126,7 @@ string getOptionalData(string fieldName) {
     return userInput;
 }
 
-int findContactIndex(vector<Contact> &addressBook, int id) {
+int findContactIndex(int id) {
     int found = -1;
     for (size_t i = 0; i < addressBook.size(); i++) {
         if (id == addressBook[i].id) {
@@ -135,7 +136,7 @@ int findContactIndex(vector<Contact> &addressBook, int id) {
     return found;
 }
 
-void readAddressBookFromFile(vector<Contact> &addressBook) {
+void readAddressBookFromFile() {
     fstream file;
     file.open("addressBook.txt", ios::in);
     string lineOfText;
@@ -151,7 +152,7 @@ void readAddressBookFromFile(vector<Contact> &addressBook) {
     }
     file.close();
 
-    if (addressBook.size() > 0) {
+    if (!addressBook.empty()) {
         cout << "Wczytano kontakty z pliku w ilosci: " << addressBook.size() << endl;
         Sleep(800);
     } else {
@@ -160,13 +161,13 @@ void readAddressBookFromFile(vector<Contact> &addressBook) {
     }
 }
 
-void addContactToAddressBook(vector<Contact> &addressBook) {
+void addContactToAddressBook() {
 
     Contact newContact;
     cin.sync();
 
 
-    newContact.id = generateNewContactIdentifier(addressBook);
+    newContact.id = generateNewContactIdentifier();
     newContact.name = getMandatoryData("imie");
     newContact.surname = getMandatoryData("nazwisko");
 
@@ -189,7 +190,7 @@ void addContactToAddressBook(vector<Contact> &addressBook) {
     Sleep(700);
 }
 
-void searchContactsByName(vector<Contact> &addressBook) {
+void searchContactsByName() {
     string name;
     char answer;
     int count = 0;
@@ -200,7 +201,7 @@ void searchContactsByName(vector<Contact> &addressBook) {
             for (size_t i = 0; i < addressBook.size(); i++) {
 
                 if (addressBook[i].name == name) {
-                    displayContactDetails(addressBook, i);
+                    displayContactDetails(i);
                     count++;
                 }
             }
@@ -216,18 +217,18 @@ void searchContactsByName(vector<Contact> &addressBook) {
     }
 }
 
-void searchContactsBySurname(vector<Contact> &addressBook) {
+void searchContactsBySurname() {
     string surname;
     char answer;
     int count = 0;
-    if (addressBook.size() != 0) {
+    if (!addressBook.empty()) {
         do {
             surname = getMandatoryData("nazwisko");
             cout << "###### Wyniki wyszukiwania ######" << endl;
             for (size_t i = 0; i < addressBook.size(); i++) {
 
                 if (addressBook[i].surname == surname) {
-                    displayContactDetails(addressBook, i);
+                    displayContactDetails(i);
                     count++;
                 }
             }
@@ -257,7 +258,7 @@ void saveContactToFile(Contact newContact) {
     addressBookFile.close();
 }
 
-void displayContactDetails(vector<Contact> &addressBook, int addressBookIndex) {
+void displayContactDetails(int addressBookIndex) {
     cout << "ID: " << addressBook[addressBookIndex].id << endl;
     cout << "Imie i nazwisko: " << addressBook[addressBookIndex].name << " " << addressBook[addressBookIndex].surname << endl;
     cout << "Telefon: " << addressBook[addressBookIndex].phone << endl;
@@ -266,10 +267,10 @@ void displayContactDetails(vector<Contact> &addressBook, int addressBookIndex) {
     cout << endl;
 }
 
-void displayAllContats(vector<Contact> &addressBook) {
+void displayAllContats() {
     if (addressBook.size() != 0) {
         for (size_t i = 0; i < addressBook.size(); i++) {
-            displayContactDetails(addressBook, i);
+            displayContactDetails(i);
         }
     } else {
         cout << "Ksiazka adresowa jest pusta." << endl;
@@ -294,20 +295,20 @@ void pause() {
     getchar();
 }
 
-void editContact(vector<Contact> &addressBook) {
+void editContact() {
     int id;
     char selectedOption;
-    displayAllContats(addressBook);
+    displayAllContats();
     cout << "Podaj id kontaktu do zmiany: ";
     cin >> id;
-    int contactIndex = findContactIndex(addressBook, id);
+    int contactIndex = findContactIndex(id);
 
     if (contactIndex >= 0) {
 
         do {
             system("cls");
             cout << "###### Edycja kontaktu ######" << endl;
-            displayContactDetails(addressBook, contactIndex);
+            displayContactDetails(contactIndex);
             cout << "1. Zmien imie" << endl;
             cout << "2. Zmien nazwisko" << endl;
             cout << "3. Zmien numer telefonu" << endl;
@@ -318,23 +319,23 @@ void editContact(vector<Contact> &addressBook) {
             cin >> selectedOption;
             switch(selectedOption) {
             case '1': {
-                editName(addressBook, contactIndex);
+                editName(contactIndex);
                 break;
             }
             case '2': {
-                editSurname(addressBook, contactIndex);
+                editSurname(contactIndex);
                 break;
             }
             case '3': {
-                editPhone(addressBook, contactIndex);
+                editPhone(contactIndex);
                 break;
             }
             case '4': {
-                editMail(addressBook, contactIndex);
+                editMail(contactIndex);
                 break;
             }
             case '5': {
-                editAddress(addressBook, contactIndex);
+                editAddress(contactIndex);
                 break;
             }
             }
@@ -347,48 +348,48 @@ void editContact(vector<Contact> &addressBook) {
 
 }
 
-void editName(vector<Contact> &addressBook, int contactIndex) {
+void editName(int contactIndex) {
     string newName;
     newName = getMandatoryData("imie");
     addressBook[contactIndex].name = newName;
-    updateLineInFile(addressBook, addressBook[contactIndex].id);
+    updateLineInFile(addressBook[contactIndex].id);
 }
 
-void editSurname(vector<Contact> &addressBook, int contactIndex) {
+void editSurname(int contactIndex) {
     string newSurname;
     newSurname = getMandatoryData("nowe nazwisko");
     addressBook[contactIndex].surname = newSurname;
-    updateLineInFile(addressBook, addressBook[contactIndex].id);
+    updateLineInFile(addressBook[contactIndex].id);
 }
 
-void editPhone(vector<Contact> &addressBook, int contactIndex) {
+void editPhone(int contactIndex) {
     string newPhone;
     newPhone = getOptionalData("nowy numer telefonu (lub wcisnij ENTER aby usunac)");
     addressBook[contactIndex].phone = newPhone;
-    updateLineInFile(addressBook, addressBook[contactIndex].id);
+    updateLineInFile(addressBook[contactIndex].id);
 }
 
-void editMail(vector<Contact> &addressBook, int contactIndex) {
+void editMail(int contactIndex) {
     string newMail;
     newMail = getOptionalData("nowy adres email (lub wcisnij ENTER aby usunac)");
     addressBook[contactIndex].mail = newMail;
-    updateLineInFile(addressBook, addressBook[contactIndex].id);
+    updateLineInFile(addressBook[contactIndex].id);
 }
 
-void editAddress(vector<Contact> &addressBook, int contactIndex) {
+void editAddress(int contactIndex) {
     string newAddress;
     newAddress = getOptionalData("nowy adres (lub wcisnij ENTER aby usunac)");
     addressBook[contactIndex].address = newAddress;
-    updateLineInFile(addressBook, addressBook[contactIndex].id);
+    updateLineInFile(addressBook[contactIndex].id);
 }
 
-void removeContact(vector<Contact> &addressBook) {
+void removeContact() {
     int id = 0;
     char key;
-    displayAllContats(addressBook);
+    displayAllContats();
     cout << "Podaj id kontaktu do usuniecia: ";
     cin >> id;
-    int contactIndex = findContactIndex(addressBook, id);
+    int contactIndex = findContactIndex(id);
     if (contactIndex >= 0) {
         while(key != 'T' && key != 't' && key != 'N' && key != 'n') {
             cout << "Czy na pewno chcesz usunac kontakt o id " << id << "? (T/N)";
@@ -398,7 +399,7 @@ void removeContact(vector<Contact> &addressBook) {
             if (key == 'T' || key == 't') {
                 vector<Contact>::iterator it = addressBook.begin() + contactIndex;
                 addressBook.erase(it);
-                removeLineFromFile(addressBook, id);
+                removeLineFromFile(id);
                 cout << "Kontakt o id " << id << " zostal usuniety z ksiazki adresowej." << endl;
             }
         }
@@ -407,13 +408,13 @@ void removeContact(vector<Contact> &addressBook) {
     }
 }
 
-void updateLineInFile(vector<Contact> &addressBook, int id) {
+void updateLineInFile(int id) {
 
     fstream addressBookFile;
     fstream tempFile;
     string lineOfText = "";
     size_t delimiterPosition;
-    int contactIndex = findContactIndex(addressBook, id);
+    int contactIndex = findContactIndex(id);
 
     addressBookFile.open("addressBook.txt");
     tempFile.open("temp.txt", ios::out);
@@ -444,7 +445,7 @@ void updateLineInFile(vector<Contact> &addressBook, int id) {
 
 }
 
-void removeLineFromFile(vector<Contact> &addressBook, int id) {
+void removeLineFromFile(int id) {
 
     fstream addressBookFile;
     fstream tempFile;
