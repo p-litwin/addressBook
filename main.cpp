@@ -13,6 +13,7 @@ struct Contact {
 
 vector<Contact> addressBook;
 
+void showLogonMenu();
 void showMainMenu();
 int generateNewContactIdentifier();
 string getMandatoryData(string fieldName);
@@ -39,9 +40,40 @@ void closeProgram();
 void pause();
 
 int main() {
-    readAddressBookFromFile();
-    showMainMenu();
+    showLogonMenu();
     return 0;
+}
+
+void showLogonMenu() {
+
+    char selectedOption;
+
+    do {
+        system("cls");
+        cout << "###### KSIAZKA ADRESOWA ######" << endl;
+        cout << "Aby korzystac z  programu, nalezy sie zalogowac." << endl;
+        cout << "1. Logowanie" << endl;
+        cout << "2. Rejestracja" << endl;
+        cout << "0. Zakoncz program" << endl;
+        cout << "Wybierz opcje: ";
+        cin >> selectedOption;
+
+        switch(selectedOption) {
+        case '1': {
+            break;
+        }
+        case '2': {
+            break;
+        }
+        case '3': {
+            break;
+        }
+        case '0': {
+            closeProgram();
+        }
+        }
+    } while (true);
+
 }
 
 void showMainMenu() {
