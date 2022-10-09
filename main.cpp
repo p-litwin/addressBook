@@ -12,13 +12,14 @@ struct User {
 };
 
 struct Contact {
-    int id;
+    int id, userId;
     string name, surname, phone, mail, address;
 };
 
 vector<User> users;
 vector<Contact> addressBook;
 
+void loadUsersFromFile();
 void showLogonMenu();
 int userLogin();
 void showMainMenu();
@@ -26,6 +27,7 @@ int generateNewContactIdentifier();
 string getMandatoryData(string fieldName);
 string getOptionalData(string fieldName);
 int findContactIndex(int id);
+User splitUserDataByDelimiter(string textToSplit, string delimiter);
 Contact splitStringByDelimiter(string textToSplit, string delimiter);
 void readAddressBookFromFile();
 void addContactToAddressBook();
@@ -47,8 +49,26 @@ void closeProgram();
 void pause();
 
 int main() {
+    loadUsersFromFile();
     showLogonMenu();
     return 0;
+}
+
+void loadUsersFromFile() {
+    fstream file;
+    file.open("users.txt", ios::in);
+    string lineOfText;
+    User newUser;
+
+    if (file.good()) {
+        while (getline(file, lineOfText)) {
+            if (lineOfText.size() > 0) {
+                newUser = splitUserDataByDelimiter(lineOfText, "|");
+                users.push_back(newUser);
+            }
+        }
+    }
+    file.close();
 }
 
 void showLogonMenu() {
@@ -534,6 +554,32 @@ void removeLineFromFile(int id) {
     tempFile.close();
     remove("addressBook.txt");
     rename("temp.txt", "addressBook.txt");
+}
+
+User splitUserDataByDelimiter(string textToSplit, string delimiter) {
+    size_t delimiterPosition = 0;
+    User newUser;
+    int userField = 1;
+    while ((delimiterPosition = textToSplit.find(delimiter)) != string::npos) {
+        switch(userField) {
+        case 1:
+            newUser.id = stoi(textToSplit.substr(0, delimiterPosition)) ;
+            textToSplit.erase(0, delimiterPosition + delimiter.length());
+            userField++;
+            break;
+        case 2:
+            newUser.userName = textToSplit.substr(0, delimiterPosition);
+            textToSplit.erase(0, delimiterPosition + delimiter.length());
+            userField++;
+            break;
+        case 3:
+            newUser.password = textToSplit.substr(0, delimiterPosition);
+            textToSplit.erase(0, delimiterPosition + delimiter.length());
+            userField++;
+            break;
+        }
+    }
+    return newUser;
 }
 
 Contact splitStringByDelimiter(string textToSplit, string delimiter) {
