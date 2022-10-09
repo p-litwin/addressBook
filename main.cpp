@@ -6,14 +6,21 @@
 
 using namespace std;
 
+struct User {
+    int id;
+    string userName, password;
+};
+
 struct Contact {
     int id;
     string name, surname, phone, mail, address;
 };
 
+vector<User> users;
 vector<Contact> addressBook;
 
 void showLogonMenu();
+int userLogin();
 void showMainMenu();
 int generateNewContactIdentifier();
 string getMandatoryData(string fieldName);
@@ -45,7 +52,7 @@ int main() {
 }
 
 void showLogonMenu() {
-
+    int loggedUserId = 0;
     char selectedOption;
 
     do {
@@ -60,6 +67,14 @@ void showLogonMenu() {
 
         switch(selectedOption) {
         case '1': {
+            loggedUserId = userLogin();
+            if (loggedUserId != 0) {
+                // wczytanie danych z ksiazki
+                showMainMenu();
+            } else {
+                cout << "Dane logowanie nieprawidlowe." << endl;
+                system("pause");
+            }
             break;
         }
         case '2': {
@@ -75,6 +90,23 @@ void showLogonMenu() {
     } while (true);
 
 }
+
+int userLogin() {
+    string userName, password;
+    cout << "Nazwa uzytkownika: ";
+    cin.sync();
+    getline(cin, userName);
+    cout << "Haslo: ";
+    cin.sync();
+    getline(cin, password);
+    for (unsigned int i = 0; i < users.size(); i++) {
+        if (userName == users[i].userName && password == users[i].password) {
+            return users[i].id;
+        }
+    }
+    return 0;
+}
+
 
 void showMainMenu() {
     char selectedOption;
