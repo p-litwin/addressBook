@@ -22,14 +22,14 @@ vector<Contact> addressBook;
 void loadUsersFromFile();
 void showLogonMenu();
 int userLogin();
-void showMainMenu();
+void showMainMenu(int loggedUserId);
 int generateNewContactIdentifier();
 string getMandatoryData(string fieldName);
 string getOptionalData(string fieldName);
 int findContactIndex(int id);
 User splitUserDataByDelimiter(string textToSplit, string delimiter);
-Contact splitStringByDelimiter(string textToSplit, string delimiter);
-void readAddressBookFromFile();
+Contact splitContactDataByDelimiter(string textToSplit, string delimiter);
+void readAddressBookFromFile(int loggedUserId);
 void addContactToAddressBook();
 void searchContactsByName();
 void searchContactsBySurname();
@@ -89,8 +89,8 @@ void showLogonMenu() {
         case '1': {
             loggedUserId = userLogin();
             if (loggedUserId != 0) {
-                // wczytanie danych z ksiazki
-                showMainMenu();
+                readAddressBookFromFile(loggedUserId);
+                showMainMenu(loggedUserId);
             } else {
                 cout << "Dane logowanie nieprawidlowe." << endl;
                 system("pause");
@@ -128,7 +128,7 @@ int userLogin() {
 }
 
 
-void showMainMenu() {
+void showMainMenu(int loggedUserId) {
     char selectedOption;
     do {
         system("cls");
@@ -220,7 +220,7 @@ int findContactIndex(int id) {
     return found;
 }
 
-void readAddressBookFromFile() {
+void readAddressBookFromFile(int loggedUserId) {
     fstream file;
     file.open("addressBook.txt", ios::in);
     string lineOfText;
@@ -229,8 +229,10 @@ void readAddressBookFromFile() {
     if (file.good() == true) {
         while (getline(file, lineOfText)) {
             if (lineOfText.size() > 0) {
-                newContact = splitStringByDelimiter(lineOfText, "|");
-                addressBook.push_back(newContact);
+                newContact = splitContactDataByDelimiter(lineOfText, "|");
+                if (newContact.userId == loggedUserId) {
+                    addressBook.push_back(newContact);
+                }
             }
         }
     }
@@ -582,38 +584,43 @@ User splitUserDataByDelimiter(string textToSplit, string delimiter) {
     return newUser;
 }
 
-Contact splitStringByDelimiter(string textToSplit, string delimiter) {
+Contact splitContactDataByDelimiter(string textToSplit, string delimiter) {
     size_t delimiterPosition = 0;
     Contact newContact;
     int contactField = 1;
     while ((delimiterPosition = textToSplit.find(delimiter)) != string::npos) {
         switch(contactField) {
         case 1:
-            newContact.id = stoi(textToSplit.substr(0, delimiterPosition)) ;
+            newContact.id = stoi(textToSplit.substr(0, delimiterPosition));
             textToSplit.erase(0, delimiterPosition + delimiter.length());
             contactField++;
             break;
         case 2:
-            newContact.name = textToSplit.substr(0, delimiterPosition);
+            newContact.userId = stoi(textToSplit.substr(0, delimiterPosition));
             textToSplit.erase(0, delimiterPosition + delimiter.length());
             contactField++;
             break;
         case 3:
-            newContact.surname = textToSplit.substr(0, delimiterPosition);
+            newContact.name = textToSplit.substr(0, delimiterPosition);
             textToSplit.erase(0, delimiterPosition + delimiter.length());
             contactField++;
             break;
         case 4:
-            newContact.phone = textToSplit.substr(0, delimiterPosition);
+            newContact.surname = textToSplit.substr(0, delimiterPosition);
             textToSplit.erase(0, delimiterPosition + delimiter.length());
             contactField++;
             break;
         case 5:
-            newContact.mail = textToSplit.substr(0, delimiterPosition);
+            newContact.phone = textToSplit.substr(0, delimiterPosition);
             textToSplit.erase(0, delimiterPosition + delimiter.length());
             contactField++;
             break;
         case 6:
+            newContact.mail = textToSplit.substr(0, delimiterPosition);
+            textToSplit.erase(0, delimiterPosition + delimiter.length());
+            contactField++;
+            break;
+        case 7:
             newContact.address = textToSplit.substr(0, delimiterPosition);
             textToSplit.erase(0, delimiterPosition + delimiter.length());
             contactField++;
