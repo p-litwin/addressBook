@@ -56,6 +56,7 @@ void removeLineFromFile(int id);
 void closeProgram();
 void pause();
 void displayAbortMessage();
+void logout();
 
 int main() {
     loadUsersFromFile();
@@ -146,7 +147,8 @@ void showMainMenu(int loggedUserId) {
         cout << "4. Wyswietl wszystkie kontakty" << endl;
         cout << "5. Usun kontakt" << endl;
         cout << "6. Edytuj kontakt" << endl;
-        cout << "0. Zakoncz program" << endl;
+        cout << "7. Zmien haslo" << endl;
+        cout << "0. Wyloguj sie" << endl;
         cout << "Wybierz opcje: ";
         cin >> selectedOption;
 
@@ -178,7 +180,7 @@ void showMainMenu(int loggedUserId) {
             break;
         }
         case '0': {
-            closeProgram();
+            logout();
         }
         }
     } while (true);
@@ -710,4 +712,9 @@ void displayAddingUserCanceledMessage() {
 
 void displayAbortMessage() {
     cout << "Wpisz '0' aby anulowac." << endl;
+}
+
+void logout() {
+    addressBook.clear();
+    showLogonMenu();
 }
