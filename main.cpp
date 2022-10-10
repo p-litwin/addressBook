@@ -106,7 +106,7 @@ void showLogonMenu() {
                 showMainMenu(loggedUserId);
             } else {
                 cout << "Dane logowania nieprawidlowe." << endl;
-                system("pause");
+                pause();
             }
             break;
         }
