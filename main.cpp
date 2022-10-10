@@ -61,6 +61,7 @@ string getNewPassword();
 bool isPasswordCorrect(string passwordEntered, string passwordInDatabase);
 int findUserIndex(int loggedUserId);
 void updatePassword(int loggedUserId);
+void showAddressBookLoadingStatus();
 
 int main() {
     loadUsersFromFile();
@@ -232,8 +233,7 @@ int readAddressBookFromFile(int loggedUserId) {
     string lineOfText;
     Contact newContact;
     int lastContactId = 0;
-
-    if (file.good() == true) {
+    if (file.good()) {
         while (getline(file, lineOfText)) {
             if (lineOfText.size() > 0) {
                 newContact = splitContactDataByDelimiter(lineOfText, "|");
@@ -245,14 +245,7 @@ int readAddressBookFromFile(int loggedUserId) {
         }
     }
     file.close();
-
-    if (!addressBook.empty()) {
-        cout << "Wczytano kontakty z pliku w ilosci: " << addressBook.size() << endl;
-        Sleep(600);
-    } else {
-        cout << "Ksiazka adresowa jest pusta!" << endl;
-        pause();
-    }
+    showAddressBookLoadingStatus();
     return lastContactId;
 }
 
@@ -342,7 +335,7 @@ void searchContactsBySurname() {
 void saveContactToFile(Contact newContact) {
     fstream addressBookFile;
     addressBookFile.open("addressBook.txt", ios::out | ios::app);
-    if (addressBookFile.good() == true) {
+    if (addressBookFile.good()) {
         addressBookFile << newContact.id << "|";
         addressBookFile << newContact.userId << "|";
         addressBookFile << newContact.name << "|";
@@ -515,7 +508,7 @@ void updateLineInFile(int id) {
     addressBookFile.open("addressBook.txt");
     tempFile.open("temp.txt", ios::out);
 
-    if (addressBookFile.good() == true) {
+    if (addressBookFile.good()) {
         while (getline(addressBookFile, lineOfText)) {
             if (lineOfText.size() > 0) {
                 delimiterPosition = lineOfText.find("|");
@@ -552,7 +545,7 @@ void removeLineFromFile(int id) {
     addressBookFile.open("addressBook.txt");
     tempFile.open("temp.txt", ios::out);
 
-    if (addressBookFile.good() == true) {
+    if (addressBookFile.good()) {
 
         while (getline(addressBookFile, lineOfText)) {
             delimiterPosition = lineOfText.find("|");
@@ -803,4 +796,14 @@ void updatePassword(int loggedUserId) {
     remove("users.txt");
     rename("temp.txt", "users.txt");
 
+}
+
+void showAddressBookLoadingStatus() {
+    if (!addressBook.empty()) {
+        cout << "Wczytano kontakty z pliku w ilosci: " << addressBook.size() << endl;
+        Sleep(600);
+    } else {
+        cout << "Ksiazka adresowa jest pusta!" << endl;
+        pause();
+    }
 }
