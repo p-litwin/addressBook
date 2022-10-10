@@ -725,7 +725,6 @@ void changePassword(int loggedUserId) {
     int loggedUserIndex = findUserIndex(loggedUserId);
     bool passwordCorrect;
     string currentPassword, newPassword, repeatPassword;
-    displayAbortMessage();
     do {
         currentPassword = getMandatoryData("Obecne haslo");
         passwordCorrect = isPasswordCorrect(currentPassword, users[loggedUserIndex].password);
@@ -736,9 +735,9 @@ void changePassword(int loggedUserId) {
             cout << "Haslo zostalo zmienione" << endl;
             Sleep(500);
         } else {
-            cout << "Podane haslo jest nieprawidlowe!";
+            cout << "Podane haslo jest nieprawidlowe!" << endl;
         }
-    } while (currentPassword != "0" && !passwordCorrect);
+    } while (!passwordCorrect);
 
 }
 
