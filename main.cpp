@@ -192,11 +192,11 @@ int generateNewContactIdentifier() {
 string getMandatoryData(string fieldName) {
     string userInput;
     do {
-        cout << "Podaj " << fieldName << ": ";
+        cout << fieldName << ": ";
         cin.sync();
         getline(cin, userInput);
         if (userInput == "") {
-            cout << "Pole " << fieldName << " nie moze byc puste." << endl;
+            cout << "Pole '" << fieldName << "' nie moze byc puste." << endl;
         }
     } while (userInput == "");
     return userInput;
