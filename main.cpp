@@ -437,35 +437,35 @@ void editContact() {
 
 void editName(int contactIndex) {
     string newName;
-    newName = getMandatoryData("imie");
+    newName = getMandatoryData("Imie");
     addressBook[contactIndex].name = newName;
     updateLineInFile(addressBook[contactIndex].id);
 }
 
 void editSurname(int contactIndex) {
     string newSurname;
-    newSurname = getMandatoryData("nowe nazwisko");
+    newSurname = getMandatoryData("Nowe nazwisko");
     addressBook[contactIndex].surname = newSurname;
     updateLineInFile(addressBook[contactIndex].id);
 }
 
 void editPhone(int contactIndex) {
     string newPhone;
-    newPhone = getOptionalData("nowy numer telefonu (lub wcisnij ENTER aby usunac)");
+    newPhone = getOptionalData("Nowy numer telefonu: (lub wcisnij ENTER aby usunac)");
     addressBook[contactIndex].phone = newPhone;
     updateLineInFile(addressBook[contactIndex].id);
 }
 
 void editMail(int contactIndex) {
     string newMail;
-    newMail = getOptionalData("nowy adres email (lub wcisnij ENTER aby usunac)");
+    newMail = getOptionalData("Nowy adres email (lub wcisnij ENTER aby usunac)");
     addressBook[contactIndex].mail = newMail;
     updateLineInFile(addressBook[contactIndex].id);
 }
 
 void editAddress(int contactIndex) {
     string newAddress;
-    newAddress = getOptionalData("nowy adres (lub wcisnij ENTER aby usunac)");
+    newAddress = getOptionalData("Nowy adres (lub wcisnij ENTER aby usunac)");
     addressBook[contactIndex].address = newAddress;
     updateLineInFile(addressBook[contactIndex].id);
 }
@@ -514,6 +514,7 @@ void updateLineInFile(int id) {
                     tempFile << lineOfText << endl;
                 } else  {
                     tempFile << addressBook[contactIndex].id << "|";
+                    tempFile << addressBook[contactIndex].userId << "|";
                     tempFile << addressBook[contactIndex].name << "|";
                     tempFile << addressBook[contactIndex].surname << "|";
                     tempFile << addressBook[contactIndex].phone << "|";
