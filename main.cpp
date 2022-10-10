@@ -31,14 +31,13 @@ void saveUserToFile(User newUser);
 void displayAddingUserCanceledMessage();
 //Adding new user functions
 void showMainMenu(int loggedUserId);
-int generateNewContactIdentifier();
 string getMandatoryData(string fieldName);
 string getOptionalData(string fieldName);
 int findContactIndex(int id);
 User splitUserDataByDelimiter(string textToSplit, string delimiter);
 Contact splitContactDataByDelimiter(string textToSplit, string delimiter);
-void readAddressBookFromFile(int loggedUserId);
-void addContactToAddressBook();
+int readAddressBookFromFile(int loggedUserId);
+int addContactToAddressBook(int loggedUserId, int lastContactId);
 void searchContactsByName();
 void searchContactsBySurname();
 void saveContactToFile(Contact newContact);
@@ -99,7 +98,6 @@ void showLogonMenu() {
         case '1': {
             loggedUserId = userLogin();
             if (loggedUserId != 0) {
-                readAddressBookFromFile(loggedUserId);
                 showMainMenu(loggedUserId);
             } else {
                 cout << "Dane logowanie nieprawidlowe." << endl;
@@ -137,6 +135,8 @@ int userLogin() {
 
 
 void showMainMenu(int loggedUserId) {
+    int lastContactId = 0;
+    lastContactId = readAddressBookFromFile(loggedUserId);
     char selectedOption;
     do {
         system("cls");
@@ -154,7 +154,7 @@ void showMainMenu(int loggedUserId) {
 
         switch(selectedOption) {
         case '1': {
-            addContactToAddressBook();
+            lastContactId = addContactToAddressBook(loggedUserId, lastContactId);
             break;
         }
         case '2': {
@@ -184,18 +184,6 @@ void showMainMenu(int loggedUserId) {
         }
         }
     } while (true);
-}
-
-int generateNewContactIdentifier() {
-    int newIdentifier = 0;
-    if (addressBook.size() == 0) {
-        newIdentifier = 1;
-    } else if (addressBook.size() == 1) {
-        newIdentifier = addressBook[0].id + 1;
-    } else {
-        newIdentifier = addressBook.back().id + 1;
-    }
-    return newIdentifier;
 }
 
 string getMandatoryData(string fieldName) {
@@ -229,11 +217,12 @@ int findContactIndex(int id) {
     return found;
 }
 
-void readAddressBookFromFile(int loggedUserId) {
+int readAddressBookFromFile(int loggedUserId) {
     fstream file;
     file.open("addressBook.txt", ios::in);
     string lineOfText;
     Contact newContact;
+    int lastContactId = 0;
 
     if (file.good() == true) {
         while (getline(file, lineOfText)) {
@@ -243,28 +232,30 @@ void readAddressBookFromFile(int loggedUserId) {
                     addressBook.push_back(newContact);
                 }
             }
+            lastContactId = newContact.id;
         }
     }
     file.close();
 
     if (!addressBook.empty()) {
         cout << "Wczytano kontakty z pliku w ilosci: " << addressBook.size() << endl;
-        Sleep(800);
+        Sleep(600);
     } else {
-        cout << "Plik ksiazki nie istnieje lub jest pusty!" << endl;
+        cout << "Ksiazka adresowa jest pusta!" << endl;
         pause();
     }
+    return lastContactId;
 }
 
-void addContactToAddressBook() {
+int addContactToAddressBook(int loggedUserId, int lastContactId) {
 
     Contact newContact;
     cin.sync();
-
-
-    newContact.id = generateNewContactIdentifier();
-    newContact.name = getMandatoryData("imie");
-    newContact.surname = getMandatoryData("nazwisko");
+    lastContactId++;
+    newContact.id = lastContactId;
+    newContact.userId = loggedUserId;
+    newContact.name = getMandatoryData("Imie");
+    newContact.surname = getMandatoryData("Nazwisko");
 
     do {
         cout << "Podaj numer telefonu: ";
@@ -281,8 +272,8 @@ void addContactToAddressBook() {
     addressBook.push_back(newContact);
     saveContactToFile(newContact);
     cout << "Nowa osoba zostala dodana";
-
     Sleep(700);
+    return lastContactId;
 }
 
 void searchContactsByName() {
@@ -344,6 +335,7 @@ void saveContactToFile(Contact newContact) {
     addressBookFile.open("addressBook.txt", ios::out | ios::app);
     if (addressBookFile.good() == true) {
         addressBookFile << newContact.id << "|";
+        addressBookFile << newContact.userId << "|";
         addressBookFile << newContact.name << "|";
         addressBookFile << newContact.surname << "|";
         addressBookFile << newContact.phone << "|";
