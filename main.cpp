@@ -56,6 +56,11 @@ void closeProgram();
 void pause();
 void displayAbortMessage();
 void logout();
+void changePassword(int loggedUserId);
+string getNewPassword();
+bool isPasswordCorrect(string passwordEntered, string passwordInDatabase);
+int findUserIndex(int loggedUserId);
+void updatePassword(int loggedUserId);
 
 int main() {
     loadUsersFromFile();
@@ -100,7 +105,7 @@ void showLogonMenu() {
             if (loggedUserId != 0) {
                 showMainMenu(loggedUserId);
             } else {
-                cout << "Dane logowanie nieprawidlowe." << endl;
+                cout << "Dane logowania nieprawidlowe." << endl;
                 system("pause");
             }
             break;
@@ -177,6 +182,10 @@ void showMainMenu(int loggedUserId) {
         }
         case '6': {
             editContact();
+            break;
+        }
+        case '7': {
+            changePassword(loggedUserId);
             break;
         }
         case '0': {
@@ -710,4 +719,89 @@ void displayAbortMessage() {
 void logout() {
     addressBook.clear();
     showLogonMenu();
+}
+
+void changePassword(int loggedUserId) {
+    int loggedUserIndex = findUserIndex(loggedUserId);
+    bool passwordCorrect;
+    string currentPassword, newPassword, repeatPassword;
+    displayAbortMessage();
+    do {
+        currentPassword = getMandatoryData("Obecne haslo");
+        passwordCorrect = isPasswordCorrect(currentPassword, users[loggedUserIndex].password);
+        if (passwordCorrect) {
+            newPassword = getNewPassword();
+            users[loggedUserIndex].password = newPassword;
+            updatePassword(loggedUserId);
+            cout << "Haslo zostalo zmienione" << endl;
+            Sleep(500);
+        } else {
+            cout << "Podane haslo jest nieprawidlowe!";
+        }
+    } while (currentPassword != "0" && !passwordCorrect);
+
+}
+
+bool isPasswordCorrect(string passwordEntered, string passwordInDatabase) {
+    if (passwordEntered == passwordInDatabase)
+        return true;
+    else
+        return false;
+}
+
+string getNewPassword() {
+    string newPassword, repeatPassword;
+    do {
+        newPassword = getMandatoryData("Nowe haslo");
+        repeatPassword = getMandatoryData("Powtorz nowe haslo");
+        if (newPassword == repeatPassword) {
+            return newPassword;
+        } else {
+            cout << "Podane hasla musza byc takie same!" << endl;
+        }
+    } while (newPassword != repeatPassword);
+}
+
+int findUserIndex(int id) {
+    int found = -1;
+    for (size_t i = 0; i < users.size(); i++) {
+        if (id == users[i].id) {
+            return i;
+        }
+    }
+    return found;
+}
+
+void updatePassword(int loggedUserId) {
+
+    fstream usersDataFile;
+    fstream tempFile;
+    string lineOfText = "";
+    size_t delimiterPosition;
+    int loggedUserIndex = findUserIndex(loggedUserId);
+
+    usersDataFile.open("users.txt");
+    tempFile.open("temp.txt", ios::out);
+
+    if (usersDataFile.good()) {
+        while (getline(usersDataFile, lineOfText)) {
+            if (lineOfText.size() > 0) {
+                delimiterPosition = lineOfText.find("|");
+                if (loggedUserId != stoi(lineOfText.substr(0, delimiterPosition))) {
+                    tempFile << lineOfText << endl;
+                } else  {
+                    tempFile << users[loggedUserIndex].id << "|";
+                    tempFile << users[loggedUserIndex].userName << "|";
+                    tempFile << users[loggedUserIndex].password << "|" << endl;
+                }
+            } else {
+                tempFile << "";
+            }
+        }
+    }
+    usersDataFile.close();
+    tempFile.close();
+    remove("users.txt");
+    rename("temp.txt", "users.txt");
+
 }
