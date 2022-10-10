@@ -22,6 +22,14 @@ vector<Contact> addressBook;
 void loadUsersFromFile();
 void showLogonMenu();
 int userLogin();
+//Adding new user functions
+void registerNewUser();
+bool checkIfUserNameIsAvailable(string userName);
+int generateNewUserId();
+void addNewUser(string userName, string password);
+void saveUserToFile(User newUser);
+void displayAddingUserCanceledMessage();
+//Adding new user functions
 void showMainMenu(int loggedUserId);
 int generateNewContactIdentifier();
 string getMandatoryData(string fieldName);
@@ -47,6 +55,7 @@ void removeContact();
 void removeLineFromFile(int id);
 void closeProgram();
 void pause();
+void displayAbortMessage();
 
 int main() {
     loadUsersFromFile();
@@ -98,6 +107,7 @@ void showLogonMenu() {
             break;
         }
         case '2': {
+            registerNewUser();
             break;
         }
         case '3': {
@@ -628,4 +638,79 @@ Contact splitContactDataByDelimiter(string textToSplit, string delimiter) {
         }
     }
     return newContact;
+}
+// Adding new user functions
+void registerNewUser() {
+    string userName, password;
+    bool userNameAlreadyTaken;
+
+    do {
+        displayAbortMessage();
+        userName = getMandatoryData("Nazwa uzytkownika");
+        userNameAlreadyTaken = checkIfUserNameIsAvailable(userName);
+        if (userNameAlreadyTaken) {
+            cout << "Nazwa uzytkownika zajeta, podaj inna." << endl;
+        }
+    } while (userNameAlreadyTaken && userName != "0");
+
+    if (userName != "0") {
+        displayAbortMessage();
+        password = getMandatoryData("Haslo");
+        if (password != "0") {
+            addNewUser(userName, password);
+            pause();
+        }
+    }
+    if (userName == "0" || password == "0") {
+        displayAddingUserCanceledMessage();
+        pause();
+    }
+}
+
+bool checkIfUserNameIsAvailable(string userName) {
+    for (unsigned int i = 0; i < users.size(); i++) {
+        if (userName == users[i].userName) {
+            return true;
+        }
+    }
+    return false;
+}
+
+int generateNewUserId() {
+    int newId = 0;
+    if (users.size() == 0) {
+        newId = 1;
+    } else {
+        newId = users.back().id + 1;
+    }
+    return newId;
+}
+
+void addNewUser(string userName, string password) {
+    User newUser;
+    newUser.id = generateNewUserId();
+    newUser.userName = userName;
+    newUser.password = password;
+    users.push_back(newUser);
+    saveUserToFile(newUser);
+    cout << "Nowy uzytkownik zostal dodany!" << endl;
+}
+
+void saveUserToFile(User newUser) {
+    fstream usersFile;
+    usersFile.open("users.txt", ios::out | ios::app);
+    if (usersFile.good()) {
+        usersFile << newUser.id << "|";
+        usersFile << newUser.userName << "|";
+        usersFile << newUser.password << "|" << endl;
+    }
+    usersFile.close();
+}
+
+void displayAddingUserCanceledMessage() {
+    cout << "Dodawanie nowego uzytkonika zostalo przerwane." << endl;
+}
+
+void displayAbortMessage() {
+    cout << "Wpisz '0' aby anulowac." << endl;
 }
